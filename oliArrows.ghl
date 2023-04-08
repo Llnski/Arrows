@@ -1,0 +1,43 @@
+#define PI 3.14159 
+#define sz 0.05 
+float plot(vec2 st, float pct, float v){
+
+    //return (1.-step(sz,v))+step(sz,v)*(smoothstep( pct-0.02, pct, st.y) -
+          //smoothstep( pct, pct+0.02, st.y)); //ah so it fixes the value between these two y values
+    return (smoothstep( pct-0.01, pct, st.y) -
+          smoothstep( pct, pct+0.01, st.y)); //ah so it fixes the value between these two y values
+}
+vec2 arrow(vec2 st, float pct){
+
+    return vec2(0,0);
+}
+
+    float f (float x, float loB, float upB){
+        return smoothstep(loB,upB, x);
+    }
+    float f (float x){
+        return smoothstep(0.1,0.9, x) * (1.-step(0.5, x)) +
+        (step(0.5, x)) * (smoothstep(0.5, 0.9, x)*0.5+0.5);
+    }
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+
+    vec2 st = fragCoord.xy / iResolution.xy;
+    //vec3 color = vec3(1, abs(4.*cos(1.0*(fragCoord.y-(PI*sin(iTime))))), -abs(4.*sin(1.0*(fragCoord.x-(PI*cos(iTime))))));
+    //color.yz = vec2(tanh(color.x), tan(color.y));
+    //color.x = smoothstep(color.x, color.x+0.5, iTime);
+    //float x = st.x+st.x*(1.-step(0.5, st.x));
+    float x = st.x;
+    float loB = 0.2*floor((x*10.) / 2.);
+    float upB = 0.2*ceil((x*10.) / 2.);
+    float y = loB+(upB-loB)*smoothstep(loB,upB, x);
+    float v = step(sz, mod(x*10., 2.));
+    //y = smoothstep(loB,upB, x) * (1.-step(v, x)); //with lines
+    //y = smoothstep(loB,upB, x);
+    vec3 color = vec3(0); 
+    color.z = plot(st, y, v);
+    fragColor = vec4(color, 1);
+
+}
+//So now we mostly just need to figure out how to make it fractalline and then
+//we must figure out how to get arrows functioning
